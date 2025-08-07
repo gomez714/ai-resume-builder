@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import {  Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-
-
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,7 +14,8 @@ export const metadata: Metadata = {
     template: "%s - AI Resume Builder",
     absolute: "AI Resume Builder",
   },
-  description: "AI Resume Builder is the easiest way to create a professional resume from scratch that will help you land your dream job.",
+  description:
+    "AI Resume Builder is the easiest way to create a professional resume from scratch that will help you land your dream job.",
 };
 
 export default function RootLayout({
@@ -25,11 +25,16 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${inter.variable} antialiased`}
-        >
-          {children}
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.variable} antialiased`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
