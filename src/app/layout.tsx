@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {  Inter } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
 
 
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s - AI Resume Builder",
     absolute: "AI Resume Builder",
   },
-  description: "AI Resume Builder is the easier way to create a professional resume that will help you land your dream job.",
+  description: "AI Resume Builder is the easiest way to create a professional resume from scratch that will help you land your dream job.",
 };
 
 export default function RootLayout({
@@ -23,12 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${inter.variable} antialiased`}
+        >
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
