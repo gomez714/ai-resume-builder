@@ -10,8 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { EditorFormProps } from "@/lib/types";
+import { CameraIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function PersonalInfoForm({
   resumeData,
@@ -39,6 +41,8 @@ export default function PersonalInfoForm({
     return unsubscribe;
   }, [form, resumeData, setResumeData]);
 
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="mx-auto max-w-xl space-y-6">
       <div className="space-y-1.5 text-center">
@@ -53,17 +57,28 @@ export default function PersonalInfoForm({
             render={({ field: { value, ...fieldValues } }) => (
               <FormItem>
                 <FormLabel>Your Photo</FormLabel>
+                <div className="flex items-center gap-2">
                 <FormControl>
                   <Input
                     {...fieldValues}
                     type="file"
                     accept="image/*"
+                    ref={photoInputRef}
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       fieldValues.onChange(file);
                     }}
                   />
                 </FormControl>
+                <Button variant="secondary"  type="button" onClick={() => {
+                  fieldValues.onChange(null);
+                  if (photoInputRef.current) {
+                    photoInputRef.current.value = "";
+                  }
+                }}>
+                  Remove
+                </Button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}

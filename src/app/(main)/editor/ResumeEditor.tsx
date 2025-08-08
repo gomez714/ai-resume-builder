@@ -1,20 +1,31 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import GeneralInfoForm from "./forms/GeneralInfoForm";
-import PersonalInfoForm from "./forms/PersonalInfoForm";
+
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { steps } from "./steps";
 import Breadcrumbs from "./Breadcrumbs";
 import Footer from "./Footer";
 import { ResumeValues } from "@/lib/validation";
+import ResumePreviewSection from "./ResumePreviewSection";
+import { cn, mapToResumeValues } from "@/lib/utils";
+import useAutoSaveResume from "./useAutoSaveResume";
+import useUnloadWarning from "@/hooks/useUnloadWarning";
+import { ResumeServerData } from "@/lib/types";
 
-export default function ResumeEditor() {
+interface ResumeEditorProps {
+  resumeToEdit: ResumeServerData | null;
+}
+
+export default function ResumeEditor({ resumeToEdit }: ResumeEditorProps) {
   const searchParams = useSearchParams();
 
-  const [resumeData, setResumeData] = useState<ResumeValues>({});
+  const [resumeData, setResumeData] = useState<ResumeValues>(
+    resumeToEdit ? mapToResumeValues(resumeToEdit) : {}
+  );
+  const [showSmallResumePreview, setShowSmallResumePreview] = useState(false);
+  const { isSaving, hasUnsavedChanges } = useAutoSaveResume(resumeData);
+  useUnloadWarning(hasUnsavedChanges);
 
   const currentStep = searchParams.get("step") || steps[0].key;
 
@@ -39,7 +50,7 @@ export default function ResumeEditor() {
       </header>
       <main className="relative grow">
         <div className="absolute top-0 bottom-0 flex w-full">
-          <div className="w-full overflow-y-auto p-3 md:w-1/2">
+          <div className={cn("w-full overflow-y-auto p-3 md:w-1/2 md:block", showSmallResumePreview ? "hidden" : "")}>    
             <Breadcrumbs currentStep={currentStep} setCurrentStep={setStep} />
             {FormComponent && (
               <FormComponent
@@ -49,12 +60,20 @@ export default function ResumeEditor() {
             )}
           </div>
           <div className="grow md:border-r" />
-          <div className="hidden w-1/2 md:flex">
-            <pre>{JSON.stringify(resumeData, null, 2)}</pre>
-          </div>
+          <ResumePreviewSection
+            resumeData={resumeData}
+            setResumeData={setResumeData}
+            className={cn(showSmallResumePreview ? "flex" : "")}
+          />
         </div>
       </main>
-      <Footer currentStep={currentStep} setCurrentStep={setStep} />
+      <Footer
+        currentStep={currentStep}
+        setCurrentStep={setStep}
+        showSmallResumePreview={showSmallResumePreview}
+        setShowSmallResumePreview={setShowSmallResumePreview}
+        isSaving={isSaving}
+      />
     </div>
   );
 }
