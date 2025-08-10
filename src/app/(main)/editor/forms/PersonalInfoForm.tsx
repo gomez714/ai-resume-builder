@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useEffect, useRef } from "react";
 import { EditorFormProps } from "@/lib/types";
-import { CameraIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function PersonalInfoForm({
