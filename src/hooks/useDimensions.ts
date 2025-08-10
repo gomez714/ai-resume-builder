@@ -1,37 +1,39 @@
 import { useEffect, useState } from "react";
 
-export default function useDimensions(containerRef: React.RefObject<HTMLElement>) {
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+export default function useDimensions<T  extends HTMLElement>(
+  containerRef: React.RefObject<T | null>,
+) {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-    useEffect(() => {
-        const currentRef = containerRef.current;
+  useEffect(() => {
+    const currentRef = containerRef.current;
 
-        function getDimensions() {
-            return {
-                width: currentRef?.clientWidth || 0,
-                height: currentRef?.clientHeight || 0,
-            }
-        }
+    function getDimensions() {
+      return {
+        width: currentRef?.clientWidth || 0,
+        height: currentRef?.clientHeight || 0,
+      };
+    }
 
-        const resizeObserver = new ResizeObserver((entries) => {
-            const entry = entries[0];
-            if (entry) {
-                setDimensions(getDimensions());
-            }
-        })
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setDimensions(getDimensions());
+      }
+    });
 
-        if (currentRef) {
-            resizeObserver.observe(currentRef);
-            setDimensions(getDimensions());
-        }
+    if (currentRef) {
+      resizeObserver.observe(currentRef);
+      setDimensions(getDimensions());
+    }
 
-        return () => {
-            if (currentRef) {
-                resizeObserver.unobserve(currentRef);
-            }
-            resizeObserver.disconnect();
-        }
-    }, [containerRef]);
+    return () => {
+      if (currentRef) {
+        resizeObserver.unobserve(currentRef);
+      }
+      resizeObserver.disconnect();
+    };
+  }, [containerRef]);
 
-    return dimensions;
+  return dimensions;
 }
