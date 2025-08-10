@@ -1,6 +1,8 @@
 "use server";
 
 import openai from "@/lib/openai";
+import { canUseAITools } from "@/lib/permissions";
+import { getUserSubscriptionLevel } from "@/lib/subscription";
 import {
   GenerateSummaryInput,
   generateSummarySchema,
@@ -8,9 +10,20 @@ import {
   GenerateWorkExperienceInput,
   WorkExperience,
 } from "@/lib/validation";
+import { auth } from "@clerk/nextjs/server";
 
 export async function generateSummary(input: GenerateSummaryInput) {
   // TODO: Block for non premium users
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const subscriptionLevel = await getUserSubscriptionLevel(userId);
+  if (!canUseAITools(subscriptionLevel)) {
+    throw new Error("Upgrade subscription to use AI tools");
+  }
 
   const { jobTitle, workExperiences, educations, skills } =
     generateSummarySchema.parse(input);
@@ -69,6 +82,18 @@ export async function generateWorkExperience(
   input: GenerateWorkExperienceInput,
 ) {
   //TODO: Block for non premium users
+
+  const { userId } = await auth();
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const subscriptionLevel = await getUserSubscriptionLevel(userId);
+  if (!canUseAITools(subscriptionLevel)) {
+    throw new Error("Upgrade subscription to use AI tools");
+  }
+
   const { description } = generateWorkExperienceSchema.parse(input);
 
   const systemMessage = `
@@ -101,13 +126,11 @@ export async function generateWorkExperience(
     throw new Error("Failed to generate AI work experience");
   }
 
-  console.log(aiResponse);
   return {
     position: aiResponse.match(/Job Title: (.*)/)?.[1] || "",
     company: aiResponse.match(/Company: (.*)/)?.[1] || "",
     startDate: aiResponse.match(/Start Date: (\d{4}-\d{2}-\d{2})?/)?.[1],
     endDate: aiResponse.match(/End Date: (\d{4}-\d{2}-\d{2})?/)?.[1],
-    description:
-      (aiResponse.match(/Description: ([\s\S]*)/)?.[1] || "").trim(),
+    description: (aiResponse.match(/Description: ([\s\S]*)/)?.[1] || "").trim(),
   } satisfies WorkExperience;
 }

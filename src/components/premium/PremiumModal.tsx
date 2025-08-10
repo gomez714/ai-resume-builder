@@ -24,7 +24,6 @@ export default function PremiumModal() {
     try {
         setLoading(true);
         const redirectUrl = await createCheckoutSession(priceId);
-        console.log("redirectUrl", redirectUrl);
         window.location.href = redirectUrl;
     } catch (error) {
         console.error(error)

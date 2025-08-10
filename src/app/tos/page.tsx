@@ -5,8 +5,7 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  const supportEmail =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@airesumebuilder.app";
+  
 
   return (
     <main className="mx-auto max-w-prose space-y-6 p-3 py-6">
@@ -181,9 +180,6 @@ export default function Page() {
       <h2 className="text-xl font-semibold">17. Contact Us</h2>
       <p>
         If you have any questions about these Terms, please contact us at{" "}
-        <a href={`mailto:${supportEmail}`} className="underline">
-          {supportEmail}
-        </a>
         .
       </p>
 

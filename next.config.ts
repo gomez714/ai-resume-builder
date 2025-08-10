@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "4mb",
+      allowedOrigins: [
+        'localhost:3000', 
+        'w5w76s26-3000.usw3.devtunnels.ms'
+      ]
     },
   },
   images: {

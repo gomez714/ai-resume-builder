@@ -1,6 +1,8 @@
 "use server";
 
+import { canCreateResume, canUseCustomization } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { getUserSubscriptionLevel } from "@/lib/subscription";
 import { ResumeSchema, ResumeValues } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
 import { del, put } from "@vercel/blob";
@@ -19,7 +21,6 @@ function inferExt(file: File) {
 export async function saveResume(values: ResumeValues) {
   const { id } = values;
 
-
   const { photo, workExperiences, educations, ...resumeValues } =
     ResumeSchema.parse(values);
 
@@ -30,6 +31,13 @@ export async function saveResume(values: ResumeValues) {
   }
 
   // TODO: Check Resume count for non-premium users
+  const subscriptionLevel = await getUserSubscriptionLevel(userId);
+  if (!id) {
+    const resumeCount = await prisma.resume.count({ where: { userId } });
+    if (!canCreateResume(subscriptionLevel, resumeCount)) {
+      throw new Error("You have reached the maximum number of resumes");
+    }
+  }
 
   const existingResume = id
     ? await prisma.resume.findUnique({ where: { id, userId } })
@@ -37,6 +45,16 @@ export async function saveResume(values: ResumeValues) {
 
   if (id && !existingResume) {
     throw new Error("Resume Not Found");
+  }
+
+  const hasCustomizations =
+    (resumeValues.borderStyle &&
+      resumeValues.borderStyle !== existingResume?.borderStyle) ||
+    (resumeValues.colorHex &&
+      resumeValues.colorHex !== existingResume?.colorHex);
+
+  if (hasCustomizations && !canUseCustomization(subscriptionLevel)) {
+    throw new Error("Customizations are not allowed for your subscription level");
   }
 
   let newPhotoUrl: string | undefined | null = undefined;
@@ -51,7 +69,7 @@ export async function saveResume(values: ResumeValues) {
     const key = `resume_photos/${userId}/${randomUUID()}${ext}`;
 
     const blob = await put(key, photo, {
-      access: "public",            // or "private" if you plan to serve with signed URLs
+      access: "public", // or "private" if you plan to serve with signed URLs
       contentType: photo.type || undefined,
     });
 
