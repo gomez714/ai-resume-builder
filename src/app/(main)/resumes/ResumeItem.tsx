@@ -43,7 +43,7 @@ export default function ResumeItem({ resume }: ResumeItemProps) {
     <div className="group relative hover:border-border bg-secondary rounded-lg border border-transparent p-3 transition-colors">
       <div className="space-y-3">
         <Link
-          href={`/editor?id=${resume.id}`}
+          href={`/editor?resumeId=${resume.id}`}
           className="inline-block w-full text-center"
         >
           <p className="line-clamp-1 font-semibold">
@@ -58,7 +58,7 @@ export default function ResumeItem({ resume }: ResumeItemProps) {
           </p>
         </Link>
         <Link
-          href={`/editor?id=${resume.id}`}
+          href={`/editor?resumeId=${resume.id}`}
           className="relative inline-block w-full"
         >
           <ResumePreview
