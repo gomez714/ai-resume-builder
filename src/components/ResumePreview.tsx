@@ -9,7 +9,7 @@ import { BorderStyles } from "@/app/(main)/editor/BorderStyleButton";
 
 interface ResumePreviewProps {
   resumeData: ResumeValues;
-  contentRef?: React.Ref<HTMLDivElement>
+  contentRef?: React.Ref<HTMLDivElement>;
   className?: string;
 }
 
@@ -127,15 +127,12 @@ function SummarySection({ resumeData }: ResumeSectionProps) {
 
   return (
     <>
-      <hr
-        className="border-2 border-gray-200"
-        style={{ borderColor: colorHex }}
-      />
+      <hr className="border-2" style={{ borderColor: colorHex }} />
       <div className="break-inside-avoid space-y-3">
-        <p className="text-lg font-medium" style={{ color: colorHex }}>
+        <p className="text-lg font-semibold" style={{ color: colorHex }}>
           Summary
         </p>
-        <p className="text-sm whitespace-pre-line">{summary}</p>
+        <div className="text-sm whitespace-pre-line">{summary}</div>
       </div>
     </>
   );
@@ -151,12 +148,9 @@ function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
 
   return (
     <>
-      <hr
-        className="border-2 border-gray-200"
-        style={{ borderColor: colorHex }}
-      />
+      <hr className="border-2" style={{ borderColor: colorHex }} />
       <div className="break-inside-avoid space-y-3">
-        <p className="text-lg font-medium" style={{ color: colorHex }}>
+        <p className="text-lg font-semibold" style={{ color: colorHex }}>
           Work Experience
         </p>
         {workExperiencesNotEmpty.map((experience, index) => (
@@ -167,13 +161,13 @@ function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
             >
               <span>{experience.position}</span>
               {experience.startDate && (
-                <span>{formatDate(experience.startDate, "MM/yyyy")} -{" "}
-                {experience.endDate
+                <span>
+                  {formatDate(experience.startDate, "MM/yyyy")} -{" "}
+                  {experience.endDate
                     ? formatDate(experience.endDate, "MM/yyyy")
                     : "Present"}
                 </span>
               )}
-              
             </div>
             <p className="text-xs font-semibold">{experience.company}</p>
             <div className="text-xs whitespace-pre-line">
@@ -196,12 +190,9 @@ function EducationSection({ resumeData }: ResumeSectionProps) {
 
   return (
     <>
-      <hr
-        className="border-2 border-gray-200"
-        style={{ borderColor: colorHex }}
-      />
+      <hr className="border-2" style={{ borderColor: colorHex }} />
       <div className="break-inside-avoid space-y-3">
-        <p className="text-lg font-medium" style={{ color: colorHex }}>
+        <p className="text-lg font-semibold" style={{ color: colorHex }}>
           Education
         </p>
         {educationNotEmpty.map((education, index) => (
@@ -213,7 +204,9 @@ function EducationSection({ resumeData }: ResumeSectionProps) {
               <span>{education.degree}</span>
               {education.startDate && (
                 <span>
-                  {`${formatDate(education.startDate, "MM/yyyy")} ${education.endDate ? `- ${formatDate(education.endDate, "MM/yyyy")}` : ""}`}
+                  {formatDate(new Date(education.startDate), "MM/yyyy")}
+                  {education.endDate &&
+                    ` - ${formatDate(new Date(education.endDate), "MM/yyyy")}`}
                 </span>
               )}
             </div>
@@ -231,10 +224,7 @@ function SkillsSection({ resumeData }: ResumeSectionProps) {
 
   return (
     <>
-      <hr
-        className="border-2 border-gray-200"
-        style={{ borderColor: colorHex }}
-      />
+      <hr className="border-2" style={{ borderColor: colorHex }} />
       <div className="break-inside-avoid space-y-3">
         <p className="text-lg font-semibold" style={{ color: colorHex }}>
           Skills

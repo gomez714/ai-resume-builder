@@ -42,7 +42,12 @@ export default function EducationForm({
   const form = useForm<EducationValues>({
     resolver: zodResolver(educationSchema),
     defaultValues: {
-      educations: resumeData.educations || [],
+      educations: resumeData.educations?.map(edu => ({
+        school: edu.school || "",
+        degree: edu.degree || "",
+        startDate: edu.startDate || "",
+        endDate: edu.endDate || "",
+      })) || [],
     },
   });
 
